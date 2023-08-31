@@ -1,14 +1,19 @@
 import openai
 import subprocess
+import os
 
-openai.api_key = "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"
+from dotenv import load_dotenv
+load_dotenv()
 
-def generate():
-    prompt = input("write your prompt")
-    messages= [
-    {"role": "system", "content": "You are a helpful assistant."},
+openai.api_key = os.environ.get('OPENAI_API_KEY')
+
+prompt = input("write your prompt")
+messages= [
+    {"role": "system", "content": "Act as a penetration tester"},
      {"role": "user", "content": f"write a command to do the following: {prompt}, format the command between three backticks"},
      ]
+
+def generate():
     response = openai.ChatCompletion.create(
     model="gpt-3.5-turbo",
     max_tokens=50,
@@ -16,6 +21,7 @@ def generate():
     frequency_penalty=0.5,
     presence_penalty=0.5,
     messages=messages)
+    messages.append(response['choices'][0]['message'])
     return response['choices'][0]['message']['content']
 
 
@@ -33,8 +39,6 @@ result = generate()
 print(f'the model response is {result}')
 command = get_text_between_backticks(result)
 print(f'the command is {command}')
-command_string = command[1].replace('\n', '')
-print(f'the command string is{command_string}')
 
 r = subprocess.run(command, shell=True, capture_output=True)
 print(r)
