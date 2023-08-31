@@ -7,13 +7,9 @@ load_dotenv()
 
 openai.api_key = os.environ.get('OPENAI_API_KEY')
 
-prompt = input("write your prompt")
-messages= [
-    {"role": "system", "content": "Act as a penetration tester"},
-     {"role": "user", "content": f"write a command to do the following: {prompt}, format the command between three backticks"},
-     ]
 
 def generate():
+    messages.append({"role": "user", "content": f"write a command to do the following: {prompt}, format the command between three backticks"})
     response = openai.ChatCompletion.create(
     model="gpt-3.5-turbo",
     max_tokens=50,
@@ -34,11 +30,17 @@ def get_text_between_backticks(s):
   return s
 
 
-result = generate()
 
-print(f'the model response is {result}')
-command = get_text_between_backticks(result)
-print(f'the command is {command}')
-
-r = subprocess.run(command, shell=True, capture_output=True)
-print(r)
+while True:
+   prompt = input("write your prompt")
+   messages= [
+    {"role": "system", "content": "Act as a penetration tester"},
+     {"role": "user", "content": f"write a command to do the following: {prompt}, format the command between three backticks"},
+     ]
+   result = generate()
+   print(f'the model response is {result}')
+   command = get_text_between_backticks(result)
+   print(f'the command is {command}')
+   r = subprocess.run(command, shell=True, capture_output=True)
+   print(r)
+   
