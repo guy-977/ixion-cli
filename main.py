@@ -1,46 +1,33 @@
-import openai
 import subprocess
-import os
+import argparse
+from llm import generate, messages, get_text_between_backticks
 
-from dotenv import load_dotenv
-load_dotenv()
-
-openai.api_key = os.environ.get('OPENAI_API_KEY')
-
-
-def generate():
-    messages.append({"role": "user", "content": f"write a command to do the following: {prompt}, format the command between three backticks"})
-    response = openai.ChatCompletion.create(
-    model="gpt-3.5-turbo",
-    max_tokens=50,
-    temperature=0.9,
-    frequency_penalty=0.5,
-    presence_penalty=0.5,
-    messages=messages)
-    messages.append(response['choices'][0]['message'])
-    return response['choices'][0]['message']['content']
-
-
-def get_text_between_backticks(s):
-  # split by ```
-  s = s.split ("```")
-  # join only those elements at odd indices with a space
-  s = ' '.join (s [i] for i in range (1, len (s), 2))
-  # return the result
-  return s
+parser = argparse.ArgumentParser()
+parser.add_argument('--prompt', action='store', required=True, help='The user prompt')
+args = parser.parse_args()
+prompt = args.prompt
 
 
 
-while True:
-   prompt = input("write your prompt")
-   messages= [
-    {"role": "system", "content": "Act as a penetration tester"},
-     {"role": "user", "content": f"write a command to do the following: {prompt}, format the command between three backticks"},
-     ]
-   result = generate()
-   print(f'the model response is {result}')
-   command = get_text_between_backticks(result)
-   print(f'the command is {command}')
-   r = subprocess.run(command, shell=True, capture_output=True)
-   print(r)
-   
+try:
+  messages = messages
+  result = generate(messages, prompt)
+  print(f'\n\nthe model response is {result}')
+  command = get_text_between_backticks(result)
+  print(f'\n\nthe command is {command}')
+  if (input("\nDo you want to excute the command? (Y/n): ") == 'Y'):
+      r = subprocess.run(command, shell=True, capture_output=True)
+      print(r.stdout.decode("utf-8"))
+      while True:
+        if(input("\n Do you want to go further? (Y/n): ") == "Y"):
+          messages.append({'role': 'user', 'content': f'using this information \n{r.stdout}\nWhat should I do to go further?'})
+          result = generate(messages, prompt)
+          print(result)
+          print(f'\nthe model response is {result}')
+        else:
+           exit('session terminated')
+
+  print(f'\n\nmessages are:{messages}')
+  exit('session terminated')
+except Exception as e:
+   print(e)
