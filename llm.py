@@ -18,12 +18,12 @@ prompts = [
 
 def generate_command(msg_array, pmt):
     msg_array.append(
-       {"role": "user", "content": f"act as penetration tester, and do the following{pmt}, format the commands between three backticks and starting with the tool name"}
+       {"role": "user", "content": f"act as penetration tester, and do the following {pmt}, format the commands between three backticks and starting with the tool name"}
     )
     response = openai.ChatCompletion.create(
        model="gpt-3.5-turbo",
-       max_tokens=50,
-       temperature=0.9,
+       max_tokens=70,
+       temperature=0.7,
        frequency_penalty=0.5,
        presence_penalty=0.5,
        messages=msg_array)
@@ -38,7 +38,7 @@ def generate_mode(msg_array, index):
    )
    response = openai.ChatCompletion.create(
        model="gpt-3.5-turbo",
-       max_tokens=50,
+       max_tokens=300,
        temperature=0.9,
        frequency_penalty=0.5,
        presence_penalty=0.5,
