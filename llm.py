@@ -28,7 +28,9 @@ def generate_command(msg_array, pmt):
        presence_penalty=0.5,
        messages=msg_array)
     msg_array.append(response['choices'][0]['message'])
-    return response['choices'][0]['message']['content']
+    response = response['choices'][0]['message']['content']
+    command = get_text_between_backticks(response)
+    return response, command
 
 def generate_mode(msg_array, index):
    msg_array.append(
