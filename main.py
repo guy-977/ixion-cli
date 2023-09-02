@@ -5,18 +5,15 @@ from llm import *
 ## arguments parser to get input for the user's arguments before excuting the program
 parser = argparse.ArgumentParser()
 parser.add_argument('-p', '--prompt', action='store', help='The user prompt', type=str)
-parser.add_argument('-r', '--recon', action='store', help="run the program in reconnaissance mode", type=bool)
-parser.add_argument('-v', '--vuln', action='store', help="run the program in vulnerability scanning mode ", type=bool)
-parser.add_argument('-e', '--exploit', action='store', help="run the program in exploitation mode", type=bool)
-parser.add_argument('-t', '--report', action='store', help="run the program in reporting mode", type=bool)
+parser.add_argument('-r', '--recon', action=argparse.BooleanOptionalAction, help="run the program in reconnaissance mode")
+parser.add_argument('-v', '--vuln', action=argparse.BooleanOptionalAction, help="run the program in vulnerability scanning mode ")
+parser.add_argument('-e', '--exploit', action=argparse.BooleanOptionalAction, help="run the program in exploitation mode")
+parser.add_argument('-t', '--report', action=argparse.BooleanOptionalAction, help="run the program in reporting mode")
 
 args = parser.parse_args()
 prompt = args.prompt
 
 # list of main four stages in penetration testing
-modes = [
-   'reconnaissance => tap r', 'vulnerability scanning => tap v', 'exploitation => tap e', 'reporting => tap rp'
-]
 
 # function to excute commands extracted from GPT's response
 def excute_command(cmd):
@@ -29,32 +26,33 @@ def excute_command(cmd):
             {"role": 'user', "content": f"this is the process output: {output}"}
             )
          print(output)
-      except TimeoutError:
+      except subprocess.TimeoutExpired:
          print('process timed out after 40 seconds')
       print('\n...................................')
       
 # 1 First method
 
 try:
+   # default mode is recon  
    # Ask the user to choose one of the main pentesting stages to get a roadmap of how to get started
-   for i in modes:
-      print(i)
 
-   mode=input("\nChoose one: ")
-
-   if(mode =='r'):
+   if(args.recon is not None and args.recon):
+      print('You are in Reconnainssance mode, These are the steps to get started:')
       print(generate_mode(messages,0)) 
       result = generate_mode(messages,0)
       print(result)
-   elif(mode =='v'):
+   elif(args.vuln is not None and args.vuln):
+      print('You are in Vulnerability scanning mode, These are the steps to get started:')
       print(generate_mode(messages,1))
       result = generate_mode(messages,1)
       print(result)
-   elif(mode =='e'):
+   elif(args.exploit is not None and args.exploit):
+      print('You are in Exploitation mode, These are the steps to get started:')
       print(generate_mode(messages,2))
       result = generate_mode(messages,2)
       print(result)
-   elif(mode =='r'):
+   elif(args.report is not None and args.report):
+      print('You are in Reporting mode, These are the steps to get started:')
       print(generate_mode(messages,3))
       result = generate_mode(messages,3)
       print(result)
@@ -86,7 +84,7 @@ try:
             if("\ndo you want to continue?(Y,n)" == 'n'):
                break
    #terminate the program        
-   print(f'\n\nmessages are:{messages}')
+   # print(f'\n\nmessages are:{messages}')
    exit('session terminated')
 except KeyboardInterrupt as e:
    print("\nthe user terminated the program")
