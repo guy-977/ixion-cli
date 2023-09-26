@@ -1,4 +1,5 @@
 import subprocess
+import argparse
 from llm import *
 
 
@@ -18,9 +19,20 @@ def excute_command(cmd):
         print('...................................')
 
 
+parser = argparse.ArgumentParser(description="devcli bestest")
+parser.add_argument("--prompt", "-p", help="the prompt for the ai (optional)")
+parser.add_argument("--temprature", "-t",
+                    help="temprature of the model", default=0.6, type=float)
+
+args = parser.parse_args()
+if args.prompt:
+    response, command = generate_command(
+        messages, args.prompt, args.temprature)
+    print(f'\n\nthe AI response is {response} \nthe command is {command}')
+    excute_command(command)
 while True:
     prompt = input(
         'enter prompt: ')
-    response, command = generate_command(messages, prompt)
+    response, command = generate_command(messages, prompt, args.temprature)
     print(f'\n\nthe AI response is {response} \nthe command is {command}')
     excute_command(command)

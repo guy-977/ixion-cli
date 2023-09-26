@@ -15,5 +15,5 @@ Pentesting (penetration testing) AI assistant app
 
 ### get started
 
-`echo "OPENAI_API_KEY=YOUR ACTUAL API KEY" > .env`\
+`echo OPENAI_API_KEY=YOUR_ACTUAL_API_KEY > .env`\
 `python main.py`
