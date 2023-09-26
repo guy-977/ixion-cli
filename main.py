@@ -22,7 +22,7 @@ def excute_command(cmd):
 parser = argparse.ArgumentParser(description="devcli bestest")
 parser.add_argument("--prompt", "-p", help="the prompt for the ai (optional)")
 parser.add_argument("--temprature", "-t",
-                    help="temprature of the model", default=0.6, type=float)
+                    help="temprature of the model", default=0.7, type=float)
 
 args = parser.parse_args()
 if args.prompt:
